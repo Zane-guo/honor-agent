@@ -205,8 +205,7 @@ def get_vllm_model_api(prompt, version:str='Qwen3-8B-SHOP', system_prompt:str=''
     if record_time: return result, time.time()-start
     return result
 
-
-@staticmethod
+#@staticmethod
 def get_api_by_name(model_name:str, **api_params):
     if model_name.lower() == 'DeepSeek-V3'.lower():
         return deepseek_v3_api
@@ -226,8 +225,8 @@ if __name__ == '__main__':
     from rich.progress import Progress
     import re
     
-    sysp = open('./ai timer/sysp.md', 'r', encoding='utf-8').read()
-    usrp = open('./ai timer/usrp.md', 'r', encoding='utf-8').read()
+    sysp = open('./sysp.md', 'r', encoding='utf-8').read()
+    usrp = open('./usrp.md', 'r', encoding='utf-8').read()
     
     # with Progress() as progress:
     #     task = progress.add_task("[red]🧐 Thinking...", total=None)
@@ -254,7 +253,7 @@ if __name__ == '__main__':
         # 从markdown文本中解析html代码
         pattern = r'```html\s*(.*?)\s*```'
         html_code = re.findall(pattern, ans, re.DOTALL)[0]
-        with open(f'./ai timer/ai_timer_output-{version}.html', 'w', encoding='utf-8') as f:
+        with open(f'./ai_timer_output-{version}.html', 'w', encoding='utf-8') as f:
             f.write(html_code)
     print(f'✅ Html文件已生成完毕\n⏱️ Time cost: {time_cost:.3f}s')
     print('👉 请打开 `ai_timer_output.html` 文件查看结果') 

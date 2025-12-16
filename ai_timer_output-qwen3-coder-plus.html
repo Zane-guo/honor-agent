@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>冬日东欧三城漫游记</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Helvetica Neue', sans-serif; }
+    body {
+      background-color: #f9f9fa;
+      color: #333;
+      line-height: 1.6;
+    }
+
+    header.trip-header {
+      background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+      padding: 20px 15px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    header h1 {
+      font-size: 22px;
+      margin-bottom: 5px;
+      color: #333;
+    }
+
+    header p.subtitle {
+      font-size: 14px;
+      color: #555;
+      margin-bottom: 10px;
+    }
+
+    .info-bar {
+      display: flex;
+      justify-content: space-around;
+      font-size: 12px;
+      color: #555;
+    }
+
+    section.trip-overview {
+      padding: 15px;
+      background: white;
+      margin: 10px;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    }
+
+    #map {
+      height: 200px;
+      width: 100%;
+      border-radius: 10px;
+      margin-top: 10px;
+    }
+
+    .city-block {
+      margin: 10px;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+      overflow: hidden;
+    }
+
+    .day-title {
+      padding: 12px 15px;
+      background: #eef7ff;
+      font-weight: bold;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .day-content {
+      padding: 10px;
+      display: none;
+    }
+
+    .timeline-item {
+      margin-bottom: 15px;
+      padding-left: 15px;
+      border-left: 2px solid #ddd;
+    }
+
+    .time-label {
+      font-weight: bold;
+      color: #2b85e0;
+    }
+
+    .node-title {
+      font-size: 16px;
+      margin-top: 5px;
+    }
+
+    .node-desc {
+      font-size: 13px;
+      color: #666;
+      margin-top: 5px;
+    }
+
+    .photo-list {
+      display: flex;
+      overflow-x: auto;
+      gap: 8px;
+      margin-top: 8px;
+      padding-bottom: 5px;
+    }
+
+    .photo-list img {
+      width: 100px;
+      height: 100px;
+      object-fit: cover;
+      border-radius: 6px;
+      flex-shrink: 0;
+    }
+
+    .edit-btn {
+      background: #eee;
+      border: none;
+      padding: 4px 8px;
+      font-size: 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-top: 5px;
+    }
+
+    section.food-section, section.highlight-section {
+      padding: 15px;
+      background: white;
+      margin: 10px;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    }
+
+    h2.section-title {
+      font-size: 18px;
+      margin-bottom: 10px;
+      color: #333;
+    }
+
+    ul.food-list li {
+      list-style-type: none;
+      padding: 8px 0;
+      font-size: 14px;
+      border-bottom: 1px dashed #eee;
+    }
+
+    ul.food-list li:last-child {
+      border: none;
+    }
+
+    @media (max-width: 768px) {
+      header h1 {
+        font-size: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<header class="trip-header">
+  <h1>冬日东欧三城漫游记</h1>
+  <p class="subtitle">穿越捷克、奥地利与匈牙利的文艺之旅</p>
+  <div class="info-bar">
+    <span>城市：布拉格 · 林茨 · 维也纳</span>
+    <span>天数：3 天</span>
+    <span>关键词：老城漫步 · 温泉小镇 · 冬季风光</span>
+  </div>
+</header>
+
+<section class="trip-overview">
+  <h2 class="section-title">旅行足迹</h2>
+  <div id="map"></div>
+</section>
+
+<!-- 布拉格 -->
+<section class="city-block">
+  <div class="day-title" onclick="toggleDay(this)">捷克 · 布拉格 &middot; Day 1：穿越中世纪的晨雾</div>
+  <div class="day-content" style="display:block;">
+    <div class="timeline-item">
+      <div class="time-label">08:35</div>
+      <div class="node-title">清晨出发</div>
+      <div class="node-desc">多云天气，气温仅 1°C 左右，穿好羽绒服再出门！清晨的布拉格空气清冽，街道几乎无人，非常适合拍照。</div>
+      <div class="photo-list">
+        <img src="https://img0.baidu.com/it/u=2277284990,2493739297&fm=253&app=138&f=JPEG?w=800&h=1067" alt="清晨">
+      </div>
+    </div>
+    <div class="timeline-item">
+      <div class="time-label">10:05</div>
+      <div class="node-title">布拉格国家博物馆</div>
+      <div class="node-desc">登上博物馆前的阶梯俯瞰全景，是拍摄城市轮廓的好位置。注意保暖，风会比较大。</div>
+      <div class="photo-list">
+        <img src="https://img1.baidu.com/it/u=2692446686,2531845848&fm=253&app=138&f=JPEG?w=1067&h=800" alt="博物馆">
+      </div>
+    </div>
+    <div class="timeline-item">
+      <div class="time-label">11:30</div>
+      <div class="node-title">查理广场散步</div>
+      <div class="node-desc">广场周边有很多街头艺人表演，适合稍作停留休息。记得提前换好零钱。</div>
+      <div class="photo-list">
+        <img src="https://img0.baidu.com/it/u=3410437965,450585960&fm=253&app=138&f=JPEG?w=800&h=1067" alt="公园">
+      </div>
+    </div>
+    <div class="timeline-item">
+      <div class="time-label">14:12</div>
+      <div class="node-title">前往卡罗维发利</div>
+      <div class="node-desc">乘坐火车约两小时可达这座著名的温泉小镇，沿途风景优美。</div>
+      <div class="photo-list">
+        <img src="https://img1.baidu.com/it/u=1217472396,1689805901&fm=253&app=138&f=JPEG?w=1067&h=800" alt="卡罗维发利">
+      </div>
+    </div>
+    <div class="timeline-item">
+      <div class="time-label">16:57</div>
+      <div class="node-title">抵达皮尔森共和国广场</div>
+      <div class="node-desc">这里比布拉格更加宁静，适合慢慢品味当地的建筑和文化。</div>
+      <div class="photo-list">
+        <img src="https://img0.baidu.com/it/u=3799519592,2658228833&fm=253&app=138&f=JPEG?w=800&h=1067" alt="皮尔森">
+        <button class="edit-btn">+ 添加照片</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 林茨 -->
+<section class="city-block">
+  <div class="day-title" onclick="toggleDay(this)">奥地利 · 林茨 &middot; Day 2：雪后小镇寻幽</div>
+  <div class="day-content">
+    <div class="timeline-item">
+      <div class="time-label">06:35</div>
+      <div class="node-title">早起出发前往林茨</div>
+      <div class="node-desc">虽然寒冷但景色极佳，建议带上暖宝宝和保温杯热水。</div>
+      <div class="photo-list">
+        <img src="https://img2.baidu.com/it/u=761050746,2876467311&fm=253&app=138&f=JPEG?w=1067&h=800" alt="林茨清晨">
+      </div>
+    </div>
+    <div class="timeline-item">
+      <div class="time-label">08:05</div>
+      <div class="node-title">林茨市区漫步</div>
+      <div class="node-desc">市中心有许多现代艺术装置，非常有趣。可以尝试当地特色咖啡。</div>
+      <div class="photo-list">
+        <img src="https://img2.baidu.com/it/u=1247860584,1746893269&fm=253&app=138&f=JPEG?w=1067&h=800" alt="林茨公园">
+      </div>
+    </div>
+    <div class="timeline-item">
+      <div class="time-label">11:30</div>
+      <div class="node-title">参观圣玛丽大教堂</div>
+      <div class="node-desc">内部装饰精美，光线柔和，适合静心欣赏宗教艺术之美。</div>
+      <div class="photo-list">
+        <img src="https://img1.baidu.com/it/u=41760383,2107500715&fm=253&app=138&f=JPEG?w=1199&h=800" alt="教堂">
+      </div>
+    </div>
+    <div class="timeline-item">
+      <div class="time-label">14:12</div>
+      <div class="node-title">圣沃尔夫冈小镇</div>
+      <div class="node-desc">这里是电影《音乐之声》取景地之一，雪后的小镇美得像童话世界。</div>
+      <div class="photo-list">
+        <img src="https://img2.baidu.com/it/u=2862622836,1107065998&fm=253&app=138&f=JPEG?w=800&h=1200" alt="小镇">
+      </div>
+    </div>
+    <div class="timeline-item">
+      <div class="time-label">20:00</div>
+      <div class="node-title">哈尔斯塔特湖畔夜色</div>
+      <div class="node-desc">灯火阑珊下的小镇倒影在湖面上，是本次旅程最动人的画面之一。</div>
+      <div class="photo-list">
+        <img src="https://img1.baidu.com/it/u=1247804454,253503138&fm=253&app=138&f=JPEG?w=1199&h=800" alt="哈尔斯塔特">
+        <button class="edit-btn">+ 添加照片</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 匈牙利 -->
+<section class="city-block">
+  <div class="day-title" onclick="toggleDay(this)">匈牙利 · 黑维兹 &middot; Day 3：冬日暖汤之旅</div>
+  <div class="day-content">
+    <div class="timeline-item">
+      <div class="time-label">07:52</div>
+      <div class="node-title">黑维兹温泉湖晨光</div>
+      <div class="node-desc">世界上唯一的天然温泉湖，在冬天显得格外神秘浪漫。记得准备防水相机。</div>
+      <div class="photo-list">
+        <img src="https://img1.baidu.com/it/u=655841868,1061346746&fm=253&app=138&f=JPEG?w=1067&h=800" alt="温泉湖">
+      </div>
+    </div>
+    <div class="timeline-item">
+      <div class="time-label">09:38</div>
+      <div class="node-title">巴拉顿湖小镇探索</div>
+      <div class="node-desc">虽然是冬天，但湖边小镇依然保留着独特的魅力，适合慢慢走。</div>
+      <div class="photo-list">
+        <img src="https://gips0.baidu.com/it/u=1397349768,1065867809&fm=3074&app=3074&f=JPEG" alt="小镇">
+      </div>
+    </div>
+    <div class="timeline-item">
+      <div class="time-label">10:30</div>
+      <div class="node-title">继续探访小镇</div>
+      <div class="node-desc">这里的手工艺品市场很有意思，可以买些纪念品。</div>
+      <div class="photo-list">
+        <img src="https://gips3.baidu.com/it/u=220983153,2361111712&fm=3074&app=3074&f=JPEG" alt="公园">
+      </div>
+    </div>
+    <div class="timeline-item">
+      <div class="time-label">13:12</div>
+      <div class="node-title">蒂豪尼小镇午餐</div>
+      <div class="node-desc">推荐品尝当地特色的鱼汤和手工面包，味道纯正温暖身心。</div>
+      <div class="photo-list">
+        <img src="https://gips1.baidu.com/it/u=3673957783,2838332118&fm=3074&app=3074&f=JPEG" alt="蒂豪尼">
+      </div>
+    </div>
+    <div class="timeline-item">
+      <div class="time-label">20:07</div>
+      <div class="node-title">维也纳城堡剧院演出</div>
+      <div class="node-desc">最后一站来到维也纳，观看一场经典歌剧，结束这场精彩的冬日之旅。</div>
+      <div class="photo-list">
+        <img src="https://img2.baidu.com/it/u=3648034682,1714405036&fm=253&fmt=auto&app=138&f=JPEG?w=750&h=500" alt="室内">
+        <button class="edit-btn">+ 添加照片</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="food-section">
+  <h2 class="section-title">美食合集</h2>
+  <ul class="food-list">
+    <li><strong>布拉格：</strong>Old Town Square附近的Trdelník（甜甜卷）香气扑鼻，值得一试。</li>
+    <li><strong>哈尔斯塔特：</strong>湖边小餐馆的鳟鱼配土豆泥，清淡又美味。</li>
+    <li><strong>蒂豪尼：</strong>传统匈牙利炖牛肉汤，热乎乎超暖心。</li>
+    <li><strong>维也纳：</strong>城堡剧院旁的Heuriger酒馆，尝一口地道葡萄酒。</li>
+  </ul>
+</section>
+
+<section class="highlight-section">
+  <h2 class="section-title">高光时刻</h2>
+  <ul class="food-list">
+    <li>在哈尔斯塔特湖畔看到的第一缕夕阳，整个小镇仿佛被镀上了金边。</li>
+    <li>黑维兹温泉湖上飘渺的蒸汽，像是走进了仙境。</li>
+    <li>维也纳城堡剧院里的金色穹顶，配合古典旋律令人沉醉。</li>
+  </ul>
+</section>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+  function toggleDay(el) {
+    const content = el.nextElementSibling;
+    if (content.style.display === "none") {
+      content.style.display = "block";
+    } else {
+      content.style.display = "none";
+    }
+  }
+
+  // 初始化地图并绘制轨迹
+  const map = L.map('map').setView([48.2082, 16.3738], 6); // Vienna为中心
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; OpenStreetMap contributors'
+  }).addTo(map);
+
+  // 标记点数据（简化模拟）
+  const markers = [
+    [50.0755, 14.4378, "布拉格"],
+    [48.3069, 14.2858, "林茨"],
+    [47.7492, 13.4681, "哈尔斯塔特"],
+    [47.6688, 17.6382, "黑维兹"],
+    [48.2082, 16.3738, "维也纳"]
+  ];
+
+  for (let i = 0; i < markers.length; i++) {
+    const marker = L.marker([markers[i][0], markers[i][1]]).addTo(map)
+      .bindPopup(markers[i][2]);
+  }
+
+  // 连接路径（简单连线示意）
+  const polylinePoints = markers.map(m => [m[0], m[1]]);
+  L.polyline(polylinePoints, {color: '#ff5c57'}).addTo(map);
+</script>
+
+</body>
+</html>

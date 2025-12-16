@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>布拉格-维也纳中欧三国四城记 | 实用攻略</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 100%;
+            margin: 0 auto;
+            background: #fff;
+            box-shadow: 0 0 30px rgba(0,0,0,0.1);
+        }
+
+        /* 顶部标题区域 */
+        .trip-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .trip-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="20" cy="20" r="2" fill="rgba(255,255,255,0.1)"/><circle cx="80" cy="40" r="1.5" fill="rgba(255,255,255,0.1)"/><circle cx="40" cy="80" r="1" fill="rgba(255,255,255,0.1)"/></svg>');
+            animation: float 20s infinite linear;
+        }
+
+        @keyframes float {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        .main-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .subtitle {
+            font-size: 16px;
+            opacity: 0.9;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .trip-info {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 15px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .info-item {
+            text-align: center;
+            background: rgba(255,255,255,0.2);
+            padding: 10px 15px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .info-label {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+
+        .info-value {
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        /* 地图区域 */
+        .trip-overview {
+            padding: 30px 20px;
+            background: #f8f9fa;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-align: center;
+            color: #333;
+        }
+
+        #map {
+            height: 300px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        /* 城市分组 */
+        .city-block {
+            margin-bottom: 40px;
+        }
+
+        .city-title {
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            color: white;
+            padding: 15px 20px;
+            font-size: 18px;
+            font-weight: bold;
+            margin: 0;
+        }
+
+        /* Day 分组 */
+        .day-block {
+            margin-bottom: 20px;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+
+        .day-header {
+            background: #f8f9fa;
+            padding: 15px 20px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #eee;
+        }
+
+        .day-header:hover {
+            background: #e9ecef;
+        }
+
+        .day-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .day-meta {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .toggle-icon {
+            transition: transform 0.3s ease;
+        }
+
+        .day-block.collapsed .toggle-icon {
+            transform: rotate(-90deg);
+        }
+
+        .day-content {
+            padding: 20px;
+            background: white;
+        }
+
+        .day-block.collapsed .day-content {
+            display: none;
+        }
+
+        /* 时间轴节点 */
+        .timeline-item {
+            margin-bottom: 25px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            border-left: 4px solid #667eea;
+        }
+
+        .timeline-time {
+            font-size: 14px;
+            color: #667eea;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .timeline-location {
+            font-size: 16px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .timeline-description {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .timeline-weather {
+            font-size: 12px;
+            color: #888;
+            margin-bottom: 10px;
+        }
+
+        .photo-grid {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            padding-bottom: 5px;
+        }
+
+        .photo-item {
+            flex-shrink: 0;
+            width: 120px;
+            height: 120px;
+            border-radius: 8px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .photo-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .photo-edit-btn {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        /* 美食合集 */
+        .food-section {
+            background: #fff5f5;
+            padding: 30px 20px;
+        }
+
+        .food-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .food-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+
+        .food-name {
+            font-size: 16px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .food-location {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .food-description {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.5;
+        }
+
+        /* 高光时刻 */
+        .highlight-section {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            padding: 30px 20px;
+        }
+
+        .highlight-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .highlight-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .highlight-card::before {
+            content: '✨';
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 24px;
+        }
+
+        .highlight-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 12px;
+        }
+
+        .highlight-description {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.6;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .main-title {
+                font-size: 20px;
+            }
+            
+            .subtitle {
+                font-size: 14px;
+            }
+            
+            .trip-info {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .info-item {
+                width: 100%;
+                max-width: 200px;
+            }
+            
+            .photo-grid {
+                justify-content: flex-start;
+            }
+        }
+
+        /* 雪花动画 */
+        .snowflake {
+            position: fixed;
+            top: -10px;
+            color: rgba(255,255,255,0.8);
+            font-size: 1em;
+            animation: fall linear infinite;
+            z-index: 1000;
+        }
+
+        @keyframes fall {
+            to {
+                transform: translateY(100vh) rotate(360deg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 顶部标题区域 -->
+        <header class="trip-header">
+            <h1 class="main-title">布拉格-维也纳中欧三国四城记</h1>
+            <p class="subtitle">12月冬日漫游，温泉古镇与古典音乐之都的完美邂逅</p>
+            <div class="trip-info">
+                <div class="info-item">
+                    <div class="info-label">旅行天数</div>
+                    <div class="info-value">4天</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">主要城市</div>
+                    <div class="info-value">捷克·奥地利·匈牙利</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">总步数</div>
+                    <div class="info-value">63,390步</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">旅行节奏</div>
+                    <div class="info-value">中等强度</div>
+                </div>
+            </div>
+        </header>
+
+        <!-- 足迹地图 -->
+        <section class="trip-overview">
+            <h2 class="section-title">🗺️ 足迹地图</h2>
+            <div id="map"></div>
+        </section>
+
+        <!-- 行程时间轴 -->
+        <section class="timeline-section" style="padding: 30px 20px;">
+            <h2 class="section-title">📅 详细行程</h2>
+            
+            <!-- 捷克 -->
+            <div class="city-block">
+                <h3 class="city-title">🇨🇿 捷克共和国</h3>
+                
+                <!-- Day 1 -->
+                <div class="day-block">
+                    <div class="day-header" onclick="toggleDay(this)">
+                        <div>
+                            <div class="day-title">Day 1 · 布拉格初印象</div>
+                            <div class="day-meta">2025-12-12 · 18,654步 · 多云1-6°C</div>
+                        </div>
+                        <span class="toggle-icon">▼</span>
+                    </div>
+                    <div class="day-content">
+                        <div class="timeline-item">
+                            <div class="timeline-time">08:35</div>
+                            <div class="timeline-location">布拉格老城</div>
+                            <div class="timeline-description">
+                                清晨抵达布拉格，薄雾中的老城广场别有一番韵味。石板路还带着昨夜的湿润，街角的咖啡馆刚刚开门，空气中弥漫着肉桂面包的香气。建议先在老城广场适应时差，感受这座千年古都的晨曦。
+                            </div>
+                            <div class="timeline-weather">🌤️ 多云，1-6°C，体感偏冷</div>
+                            <div class="photo-grid">
+                                <div class="photo-item">
+                                    <img src="https://img0.baidu.com/it/u=2277284990,2493739297&fm=253&app=138&f=JPEG?w=800&h=1067" alt="布拉格老城">
+                                    <button class="photo-edit-btn" onclick="editPhoto(this)">✏️</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="timeline-item">
+                            <div class="timeline-time">10:05</div>
+                            <div class="timeline-location">布拉格国家博物馆</div>
+                            <div class="timeline-description">
+                                参观国家博物馆新馆，现代化的展览设计让人眼前一亮。博物馆位于瓦茨拉夫广场，是了解捷克历史文化的绝佳起点。门票约250克朗，建议预留2-3小时参观时间。
+                            </div>
+                            <div class="timeline-weather">🌤️ 多云，1-6°C</div>
+                            <div class="photo-grid">
+                                <div class="photo-item">
+                                    <img src="https://img1.baidu.com/it/u=2692446686,2531845848&fm=253&app=138&f=JPEG?w=1067&h=800" alt="国家博物馆">
+                                    <button class="photo-edit-btn" onclick="editPhoto(this)">✏️</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="timeline-item">
+                            <div class="timeline-time">11:30</div>
+                            <div class="timeline-location">查理广场</div>
+                            <div class="timeline-description">
+                                漫步查理广场，公园里的梧桐叶已泛黄。广场上的圣克莱门特教堂是巴洛克建筑的杰作，阳光透过云层洒在教堂圆顶上，形成美丽的光影效果。这里是当地人休闲的好去处，可以感受到布拉格的日常生活节奏。
+                            </div>
+                            <div class="timeline-weather">🌤️ 多云，1-6°C</div>
+                            <div class="photo-grid">
+                                <div class="photo-item">
+                                    <img src="https://img0.baidu.com/it/u=3410437965,450585960&fm=253&app=138&f=JPEG?w=800&h=1067" alt="查理广场">
+                                    <button class="photo-edit-btn" onclick="editPhoto(this)">✏️</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="timeline-item">
+                            <div class="timeline-time">14:12</div>
+                            <div class="timeline-location">卡罗维发利</div>
+                            <div class="timeline-description">
+                                下午前往温泉小镇卡罗维发利，车程约2小时。这座小镇以温泉和电影节闻名，街道两旁的温泉柱廊是必打卡地标。可以品尝当地特色的温泉水，虽然口感独特但据说有保健功效。
+                            </div>
+                            <div class="timeline-weather">🌤️ 多云，1-6°C</div>
+                            <div class="photo-grid">
+                                <div class="photo-item">
+                                    <img src="https://img1.baidu.com/it/u=1217472396,1689805901&fm=253&app=138&f=JPEG?w=1067&h=800" alt="卡罗维发利">
+                                    <button class="photo-edit-btn" onclick="editPhoto(this)">✏️</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="timeline-item">
+                            <div class="timeline-time">16:57</div>
+                            <div class="timeline-location">皮尔森共和国广场</div>
+                            <div class="timeline-description">
+                                傍晚抵达皮尔森，共和国广场是城市的中心。广场上的圣巴托洛缪教堂是地标建筑，广场周围有很多餐厅和咖啡馆。皮尔森以啤酒闻名，不妨尝试一杯正宗的皮尔森啤酒，配上当地美食。
+                            </div>
+                            <div class="timeline-weather">🌤️ 多云，1-6°C</div>
+                            <div class="photo-grid">
+                                <div class="photo-item">
+                                    <img src="https://img0.baidu.com/it/u=3799519592,2658228833&fm=253&app=138&f=JPEG?w=800&h=1067" alt="皮尔森广场">
+                                    <button class="photo-edit-btn" onclick="editPhoto(this)">✏️</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 奥地利 -->
+            <div class="city-block">
+                <h3 class="city-title">🇦🇹 奥地利</h3>
+                
+                <!-- Day 2 -->
+                <div class="day-block">
+                    <div class="day-header" onclick="toggleDay(this)">
+                        <div>
+                            <div class="day-title">Day 2 · 奥地利湖区风情</div>
+                            <div class="day-meta">2025-12-13 · 12,368步 · 阴2-5°C</div>
+                        </div>
+                        <span class="toggle-icon">▼</span>
+                    </div>
+                    <div class="day-content">
+                        <div class="timeline-item">
+                            <div class="timeline-time">06:35</div>
+                            <div class="timeline-location">林茨</div>
+                            <div class="timeline-description">
+                                清晨抵达林茨，多瑙河畔的工业城市在晨光中显得格外宁静。河边的公园里晨练的人们已经开始活动，空气清新宜人。林茨是奥地利重要的工业城市，但老城区依然保持着浓厚的历史氛围。
+                            </div>
+                            <div class="timeline-weather">☁️ 阴，2-5°C，体感偏冷</div>
+                            <div class="photo-grid">
+                                <div class="photo-item">
+                                    <img src="https://img2.baidu.com/it/u=761050746,2876467311&fm=253&app=138&f=JPEG?w=1067&h=800" alt="林茨公园">
+                                    <button class="photo-edit-btn" onclick="editPhoto(this)">✏️</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="timeline-item">
+                            <div class="timeline-time">08:05</div>
+                            <div class="timeline-location">林茨市中心</div>
+                            <div class="timeline-description">
+                                漫步林茨市中心， Hauptplatz（主广场）是城市的核心。广场上的三一柱是巴洛克风格的纪念柱，周围是色彩斑斓的巴洛克建筑。街边的咖啡馆开始供应早餐，奥地利咖啡文化浓厚。
+                            </div>
+                            <div class="timeline-weather">☁️ 阴，2-5°C</div>
+                            <div class="photo-grid">
+                                <div class="photo-item">
+                                    <img src="https://img2.baidu.com/it/u=1247860584,1746893269&fm=253&app=138&f=JPEG?w=1067&h=800" alt="林茨市中心">
+                                    <button class="photo-edit-btn" onclick="editPhoto(this)">✏️</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="timeline-item">
+                            <div class="timeline-time">11:30</div>
+                            <div class="timeline-location">圣玛丽大教堂</div>
+                            <div class="timeline-description">
+                                参观圣玛丽大教堂，这座哥特式教堂是林茨最重要的宗教建筑。教堂内部彩绘玻璃精美绝伦，管风琴的音色在空旷的教堂内回响。门票免费，但建议捐赠2-3欧元。
+                            </div>
+                            <div class="timeline-weather">☁️ 阴，2-5°C</div>
+                            <div class="photo-grid">
+                                <div class="photo-item">
+                                    <img src="https://img1.baidu.com/it/u=41760383,2107500715&fm=253&app=138&f=JPEG?w=1199&h=800" alt="圣玛丽大教堂">
+                                    <button class="photo-edit-btn" onclick="editPhoto(this)">✏️</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="timeline-item">
+                            <div class="timeline-time">14:12</div>
+                            <div class="timeline-location">圣沃尔夫冈小镇</div>
+                            <div class="timeline-description">
+                                下午前往圣沃尔夫冈，这个沃尔夫冈湖畔的小镇如童话般美丽。湖水清澈见底，远山如黛。小镇上的白马酒店是著名景点，虽然房价较高但环境绝佳。可以在湖边散步，感受阿尔卑斯山区的宁静。
+                            </div>
+                            <div class="timeline-weather">☁️ 阴，2-5°C</div>
+                            <div class="photo-grid">
+                                <div class="photo-item">
+                                    <img src="https://img2.baidu.com/it/u=2862622836,1107065998&fm=253&app=138&f=JPEG?w=800&h=1200" alt="圣沃尔夫冈">
+                                    <button class="photo-edit-btn" onclick="editPhoto(this)">✏️</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="timeline-item">
+                            <div class="timeline-time">20:00</div>
+                            <div class="timeline-location">哈尔斯塔特</div>
+                            <div class="timeline-description">
+                                傍晚抵达哈尔斯塔特，这个世界文化遗产小镇在夜色中更显神秘。湖面倒映着小镇的灯光，仿佛置身于童话世界。小镇不大，1-2小时就能走完，但每一处都是风景。
+                            </div>
+                            <div class="timeline-weather">☁️ 阴，2-5°C</div>
+                            <div class="photo-grid">
+                                <div class="photo-item">
+                                    <img src="https://img1.baidu.com/it/u=1247804454,253503138&fm=253&app=138&f=JPEG?w=1199&h=800" alt="哈尔斯塔特夜景">
+                                    <button class="photo-edit-btn" onclick="editPhoto(this)">✏️</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 匈牙利 -->
+            <div class="city-block">
+                <h3 class="city-title">🇭🇺 匈牙利</h3>
+                
+                <!-- Day 3 -->
+                <div class="day-block">
+                    <div class="day-header" onclick="toggleDay(this)">
+                        <div>
+                            <div class="day-title">Day 3 · 温泉与湖区</div>
+                            <div class="day-meta">2025-12-15 · 32,368步 · 阴转晴0-6°C</div>
+                        </div>
+                        <span class="toggle-icon">▼</span>
+                    </div>
+                    <div class="day-content">
+                        <div class="timeline-item">
+                            <div class="timeline-time">07:52</div>
+                            <div class="timeline-location">黑维兹温泉湖</div>
+                            <div class="timeline-description">
+                                清晨体验黑维兹温泉湖，这是世界第二大温泉湖。湖水温度常年保持在26-28°C，即使在冬日也温暖如春。湖水中含有丰富的矿物质，对皮肤病和风湿病有疗效。建议在湖中游泳或泡温泉，感受温泉疗养的乐趣。
+                            </div>
+                            <div class="timeline-weather">☁️ 阴，0-4°C，紫外线很弱</div>
+                            <div class="photo-grid">
+                                <div class="photo-item">
+                                    <img src="https://img1.baidu.com/it/u=655841868,1061346746&fm=253&app=138&f=JPEG?w=1067&h=800" alt="黑维兹温泉湖">
+                                    <button class="photo-edit-btn" onclick="editPhoto(this)">✏️</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="timeline-item">
+                            <div class="timeline-time">09:38</div>
+                            <div class="timeline-location">巴拉顿湖小镇</div>
+                            <div class="timeline-description">
+                                上午前往巴拉顿湖，这是中欧最大的湖泊，被誉为"匈牙利海"。湖边的小镇宁静祥和，可以乘船游览湖光山色。湖区的气候相对温和，即使在12月也有不少游客前来度假。
+                            </div>
+                            <div class="timeline-weather">☁️ 阴，0-4°C，紫外线很弱</div>
+                            <div class="photo-grid">
+                                <div class="photo-item">
+                                    <img src="https://gips0.baidu.com/it/u=1397349768,1065867809&fm=3074&app=3074&f=JPEG" alt="巴拉顿湖">
+                                    <button class="photo-edit-btn" onclick="editPhoto(this)">✏️</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="timeline-item">
+                            <div class="timeline-time">10:30</div>
+                            <div class="timeline-location">巴拉顿湖公园</div>
+                            <div class="timeline-description">
+                                在湖边公园漫步，虽然是冬季但依然有游客在湖边喂天鹅。公园里的步道很适合散步，可以近距离欣赏湖景。湖边的咖啡馆供应热饮，是休息的好去处。
+                            </div>
+                            <div class="timeline-weather">☁️ 阴，0-4°C，紫外线很弱</div>
+                            <div class="photo-grid">
+                                <div class="photo-item">
+                                    <img src="https://gips3.baidu.com/it/u=220983153,2361111712&fm=3074&app=3074&f=JPEG" alt="巴拉顿湖公园">
+                                    <button class="photo-edit-btn" onclick="editPhoto(this)">✏️</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="timeline-item">
+                            <div class="timeline-time">13:12</div>
+                            <div class="timeline-location">蒂豪尼</div>
+                            <div class="timeline-description">
+                                下午前往蒂豪尼半岛，这里是巴拉顿湖最著名的景点。半岛上有古老的本笃会修道院遗址，可以俯瞰整个湖面。半岛上的步道是徒步的好选择，虽然步数较多但风景优美。
+                            </div>
+                            <div class="timeline-weather">☁️ 阴，0-4°C，紫外线很弱</div>
+                            <div class="photo-grid">
+                                <div class="photo-item">
+                                    <img src="https://gips1.baidu.com/it/u=3673957783,2838332118&fm=3074&app=3074&f=JPEG" alt="蒂豪尼">
+                                    <button class="photo-edit-btn" onclick="editPhoto(this)">✏️</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="timeline-item">
+                            <div class="timeline-time">20:07</div>
+                            <div class="timeline-location">维也纳城堡剧院</div>
+                            <div class="timeline-description">
+                                晚上抵达维也纳，参观著名的城堡剧院。这里是欧洲最重要的歌剧院之一，建筑本身就是艺术品。虽然没有演出，但可以参观剧院内部，感受这座音乐之都的艺术氛围。
+                            </div>
+                            <div class="timeline-weather">☀️ 晴，4-6°C，体感舒适</div>
+                            <div class="photo-grid">
+                                <div class="photo-item">
+                                    <img src="https://img2.baidu.com/it/u=3648034682,1714405036&fm=253&fmt=auto&app=138&f=JPEG?w=750&h=500" alt="维也纳城堡剧院">
+                                    <button class="photo-edit-btn" onclick="editPhoto(this)">✏️</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 美食合集 -->
+        <section class="food-section">
+            <h2 class="section-title">🍽️ 美食发现</h2>
+            <div class="food-grid">
+                <div class="food-card">
+                    <div class="food-name">捷克传统炖肉</div>
+                    <div class="food-location">📍 布拉格老城</div>
+                    <div class="food-description">
+                        在布拉格老城的传统餐厅品尝了正宗的捷克炖肉，配上酸菜和面包，肉质鲜嫩，汤汁浓郁。当地啤酒是绝佳搭配，虽然语言不通但服务员很热情。
+                    </div>
+                </div>
+                <div class="food-card">
+                    <div class="food-name">奥地利炸猪排</div>
+                    <div class="food-location">📍 维也纳市中心</div>
+                    <div class="food-description">
+                        维也纳的炸猪排外酥内嫩，配上土豆沙拉和啤酒，是经典的奥地利美食。虽然分量很大但味道很棒，价格适中，是体验当地文化的绝佳方式。
+                    </div>
+                </div>
+                <div class="food-card">
+                    <div class="food-name">匈牙利炖牛肉</div>
+                    <div class="food-location">📍 布达佩斯</div>
+                    <div class="food-description">
+                        匈牙利炖牛肉是必尝美食，番茄和甜椒的搭配让汤汁酸甜可口。配上当地的辣椒粉，口感层次丰富。在温泉小镇的餐厅里品尝，温暖又满足。
+                    </div>
+                </div>
+                <div class="food-card">
+                    <div class="food-name">温泉蛋配面包</div>
+                    <div class="food-location">📍 黑维兹温泉湖</div>
+                    <div class="food-description">
+                        在温泉湖边的咖啡馆享用了温泉蛋配黑面包，简单但美味。当地的蜂蜜和果酱是很好的搭配，配上一杯热茶，在寒冷的冬日里格外温暖。
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 高光时刻 -->
+        <section class="highlight-section">
+            <h2 class="section-title">✨ 旅行高光时刻</h2>
+            <div class="highlight-grid">
+                <div class="highlight-card">
+                    <div class="highlight-title">黑维兹温泉湖的温暖邂逅</div>
+                    <div class="highlight-description">
+                        在零度的冬日里跳入26°C的温泉湖，那一刻的震撼无法用言语形容。温泉水富含矿物质，泡完后皮肤变得光滑细腻。湖边的雾气缭绕，仿佛置身仙境，这是整个旅程中最治愈的时刻。
+                    </div>
+                </div>
+                <div class="highlight-card">
+                    <div class="highlight-title">哈尔斯塔特的童话夜色</div>
+                    <div class="highlight-description">
+                        当夜幕降临，哈尔斯塔特小镇的灯光倒映在湖面上，整个世界仿佛都安静下来。沿着湖边慢慢踱步，每一步都是风景。那种宁静与美好，让人忘记了城市的喧嚣，只想永远停留在这个童话世界里。
+                    </div>
+                </div>
+                <div class="highlight-card">
+                    <div class="highlight-title">维也纳音乐之都的初体验</div>
+                    <div class="highlight-description">
+                        虽然没能听到现场音乐会，但在城堡剧院感受了这座音乐之都的艺术氛围。精美的建筑、华丽的装饰，每一处都诉说着维也纳的音乐历史。在这座莫扎特和施特劳斯曾经生活过的城市里，艺术气息无处不在。
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // 初始化地图
+        function initMap() {
+            const map = L.map('map').setView([48.8566, 2.3522], 5);
+            
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors'
+            }).addTo(map);
+
+            // 城市坐标数据
+            const cities = [
+                {name: '布拉格', lat: 50.0755, lng: 14.4378, day: 'Day 1'},
+                {name: '卡罗维发利', lat: 50.2319, lng: 12.8719, day: 'Day 1'},
+                {name: '皮尔森', lat: 49.7437, lng: 13.3777, day: 'Day 1'},
+                {name: '林茨', lat: 48.3059, lng: 14.2862, day: 'Day 2'},
+                {name: '圣沃尔夫冈', lat: 47.7367, lng: 13.3992, day: 'Day 2'},
+                {name: '哈尔斯塔特', lat: 47.5576, lng: 13.6493, day: 'Day 2'},
+                {name: '黑维兹', lat: 46.8389, lng: 17.1653, day: 'Day 3'},
+                {name: '巴拉顿湖', lat: 46.8362, lng: 17.7348, day: 'Day 3'},
+                {name: '维也纳', lat: 48.2082, lng: 16.3738, day: 'Day 3'}
+            ];
+
+            // 添加标记点
+            cities.forEach(city => {
+                const marker = L.marker([city.lat, city.lng]).addTo(map);
+                marker.bindPopup(`<b>${city.name}</b><br>${city.day}`);
+            });
+
+            // 绘制路线
+            const route = L.polyline([
+                [50.0755, 14.4378], // 布拉格
+                [50.2319, 12.8719], // 卡罗维发利
+                [49.7437, 13.3777], // 皮尔森
+                [48.3059, 14.2862], // 林茨
+                [47.7367, 13.3992], // 圣沃尔夫冈
+                [47.5576, 13.6493], // 哈尔斯塔特
+                [46.8389, 17.1653], // 黑维兹
+                [46.8362, 17.7348], // 巴拉顿湖
+                [48.2082, 16.3738]  // 维也纳
+            ], {
+                color: '#667eea',
+                weight: 3,
+                opacity: 0.8
+            }).addTo(map);
+        }
+
+        // 切换Day展开/折叠
+        function toggleDay(header) {
+            const dayBlock = header.parentElement;
+            dayBlock.classList.toggle('collapsed');
+        }
+
+        // 编辑照片功能
+        function editPhoto(btn) {
+            const action = prompt('选择操作：1-删除照片 2-替换照片 3-添加描述');
+            if (action === '1') {
+                if (confirm('确定要删除这张照片吗？')) {
+                    btn.parentElement.remove();
+                }
+            } else if (action === '2') {
+                const newUrl = prompt('请输入新图片URL：');
+                if (newUrl) {
+                    btn.parentElement.querySelector('img').src = newUrl;
+                }
+            } else if (action === '3') {
+                const description = prompt('请输入照片描述：');
+                if (description) {
+                    alert('描述已添加：' + description);
+                }
+            }
+        }
+
+        // 创建雪花效果
+        function createSnowflake() {
+            const snowflake = document.createElement('div');
+            snowflake.className = 'snowflake';
+            snowflake.innerHTML = '❄';
+            snowflake.style.left = Math.random() * 100 + 'vw';
+            snowflake.style.animationDuration = Math.random() * 3 + 2 + 's';
+            snowflake.style.opacity = Math.random();
+            snowflake.style.fontSize = Math.random() * 10 + 10 + 'px';
+            
+            document.body.appendChild(snowflake);
+            
+            setTimeout(() => {
+                snowflake.remove();
+            }, 5000);
+        }
+
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            initMap();
+            
+            // 创建雪花效果
+            setInterval(createSnowflake, 300);
+            
+            // 默认展开前2天
+            const dayBlocks = document.querySelectorAll('.day-block');
+            dayBlocks.forEach((block, index) => {
+                if (index >= 2) {
+                    block.classList.add('collapsed');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

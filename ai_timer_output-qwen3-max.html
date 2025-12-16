@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>中欧三国冬日漫游记</title>
+  <style>
+    :root {
+      --primary: #4a6fa5;
+      --light: #f9f7f0;
+      --dark: #2c3e50;
+      --accent: #d4af37;
+    }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+    }
+    body {
+      background: var(--light);
+      color: var(--dark);
+      line-height: 1.6;
+      padding-bottom: 2rem;
+    }
+    .trip-header {
+      background: linear-gradient(135deg, #4a6fa5 0%, #2c3e50 100%);
+      color: white;
+      padding: 1.5rem 1rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .trip-header h1 {
+      font-size: 1.6rem;
+      margin-bottom: 0.5rem;
+    }
+    .trip-header p.subtitle {
+      font-size: 1rem;
+      opacity: 0.9;
+      margin-bottom: 1rem;
+    }
+    .trip-meta {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+      font-size: 0.9rem;
+    }
+    .trip-meta span {
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+    .trip-overview {
+      padding: 1.5rem 1rem;
+      background: white;
+      margin: 1rem;
+      border-radius: 12px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+    .section-title {
+      font-size: 1.3rem;
+      margin-bottom: 1rem;
+      color: var(--primary);
+      font-weight: 600;
+    }
+    .city-block {
+      margin: 1.5rem 1rem;
+    }
+    .city-title {
+      font-size: 1.4rem;
+      margin-bottom: 1rem;
+      color: var(--dark);
+      border-left: 4px solid var(--accent);
+      padding-left: 0.8rem;
+    }
+    .day-block {
+      background: white;
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 1.2rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    .day-header {
+      padding: 1rem;
+      background: #f0f4f8;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .timeline-item {
+      padding: 1.2rem;
+      border-bottom: 1px solid #eee;
+    }
+    .timeline-item:last-child {
+      border-bottom: none;
+    }
+    .time-label {
+      font-size: 0.9rem;
+      color: var(--primary);
+      margin-bottom: 0.3rem;
+    }
+    .poi-title {
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+    .item-desc {
+      font-size: 0.95rem;
+      margin-bottom: 0.8rem;
+      color: #555;
+    }
+    .photo-grid {
+      display: flex;
+      gap: 0.6rem;
+      overflow-x: auto;
+      padding-bottom: 0.5rem;
+    }
+    .photo-grid img {
+      width: 80px;
+      height: 80px;
+      object-fit: cover;
+      border-radius: 8px;
+      flex-shrink: 0;
+    }
+    .edit-btn {
+      width: 80px;
+      height: 80px;
+      border: 2px dashed #ccc;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #999;
+      font-size: 1.2rem;
+      flex-shrink: 0;
+      cursor: pointer;
+    }
+    .food-section, .highlight-section {
+      margin: 1.5rem 1rem;
+    }
+    .card {
+      background: white;
+      padding: 1.2rem;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    .snowflake {
+      position: absolute;
+      color: white;
+      opacity: 0.7;
+      font-size: 1.2rem;
+      z-index: 0;
+      animation: fall linear forwards;
+    }
+    @keyframes fall {
+      to {
+        transform: translateY(100vh) rotate(360deg);
+      }
+    }
+    @media (max-width: 480px) {
+      .trip-header h1 {
+        font-size: 1.4rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- 雪花背景（冬季主题） -->
+  <div id="snow-container"></div>
+
+  <!-- 顶部摘要 -->
+  <header class="trip-header">
+    <h1>中欧三国冬日漫游记</h1>
+    <p class="subtitle">布拉格、林茨到维也纳，三日穿越捷克、奥地利与匈牙利，冬日慢行+温泉疗愈</p>
+    <div class="trip-meta">
+      <span>📍 城市：布拉格 · 林茨 · 维也纳</span>
+      <span>📅 天数：3 天</span>
+      <span>👣 总步数：63,390 步</span>
+      <span>❄️ 节奏：中高强度暴走 + 温泉放松</span>
+    </div>
+  </header>
+
+  <!-- 足迹地图（简化示意，因无真实坐标） -->
+  <section class="trip-overview">
+    <h2 class="section-title">🗺️ 行程足迹</h2>
+    <p>本行程横跨捷克、奥地利、匈牙利三国，从布拉格老城出发，经林茨、哈尔斯塔特，最终抵达维也纳。因数据未提供精确经纬度，此处为示意路线图。</p>
+    <div style="height: 200px; background: #eef4ff; border-radius: 10px; margin-top: 10px; display: flex; align-items: center; justify-content: center; color: #666;">
+      🌍 路线动态回放（需真实坐标支持）
+    </div>
+  </section>
+
+  <!-- 城市 & 时间轴 -->
+  <section class="city-block">
+    <h2 class="city-title">🇨🇿 捷克 · 布拉格 & 卡罗维发利</h2>
+    
+    <div class="day-block">
+      <div class="day-header">Day 1 · 2025-12-12（步数：18,654）</div>
+      <div class="timeline-content">
+        <div class="timeline-item">
+          <div class="time-label">08:35</div>
+          <div class="poi-title">布拉格清晨漫步</div>
+          <div class="item-desc">多云，1~6°C。清晨的布拉格人少清静，适合拍摄空镜老城。建议穿防滑鞋，石板路湿滑。</div>
+          <div class="photo-grid">
+            <img src="https://img0.baidu.com/it/u=2277284990,2493739297&fm=253&app=138&f=JPEG?w=800&h=1067" alt="清晨布拉格">
+            <div class="edit-btn">+</div>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="time-label">10:05</div>
+          <div class="poi-title">布拉格国家博物馆</div>
+          <div class="item-desc">位于瓦茨拉夫广场顶端，可俯瞰全城。门票约250 CZK，建议预留1.5小时参观。</div>
+          <div class="photo-grid">
+            <img src="https://img1.baidu.com/it/u=2692446686,2531845848&fm=253&app=138&f=JPEG?w=1067&h=800" alt="国家博物馆">
+            <div class="edit-btn">+</div>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="time-label">11:30</div>
+          <div class="poi-title">查理广场公园</div>
+          <div class="item-desc">冬日公园略显萧瑟，但本地人遛狗、散步氛围悠闲。附近有热红酒摊位，暖手又暖心。</div>
+          <div class="photo-grid">
+            <img src="https://img0.baidu.com/it/u=3410437965,450585960&fm=253&app=138&f=JPEG?w=800&h=1067" alt="查理广场">
+            <div class="edit-btn">+</div>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="time-label">14:12</div>
+          <div class="poi-title">卡罗维发利温泉小镇</div>
+          <div class="item-desc">乘火车约2.5小时抵达。小镇以温泉闻名，可尝一口温泉水（微咸！），别错过 Becherovka 苦艾酒。</div>
+          <div class="photo-grid">
+            <img src="https://img1.baidu.com/it/u=1217472396,1689805901&fm=253&app=138&f=JPEG?w=1067&h=800" alt="卡罗维发利">
+            <div class="edit-btn">+</div>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="time-label">16:57</div>
+          <div class="poi-title">皮尔森共和国广场</div>
+          <div class="item-desc">顺路打卡啤酒之都皮尔森，广场不大但建筑精美。若时间充裕，推荐参观 Pilsner Urquell 啤酒厂。</div>
+          <div class="photo-grid">
+            <img src="https://img0.baidu.com/it/u=3799519592,2658228833&fm=253&app=138&f=JPEG?w=800&h=1067" alt="皮尔森广场">
+            <div class="edit-btn">+</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="city-block">
+    <h2 class="city-title">🇦🇹 奥地利 · 林茨 & 哈尔斯塔特</h2>
+    
+    <div class="day-block">
+      <div class="day-header">Day 2 · 2025-12-13（步数：12,368）</div>
+      <div class="timeline-content">
+        <div class="timeline-item">
+          <div class="time-label">06:35–08:05</div>
+          <div class="poi-title">林茨多瑙河畔晨光</div>
+          <div class="item-desc">阴天，2~5°C。清晨河岸公园宁静，适合慢跑或冥想。注意保暖，体感较冷。</div>
+          <div class="photo-grid">
+            <img src="https://img2.baidu.com/it/u=761050746,2876467311&fm=253&app=138&f=JPEG?w=1067&h=800" alt="林茨公园">
+            <img src="https://img2.baidu.com/it/u=1247860584,1746893269&fm=253&app=138&f=JPEG?w=1067&h=800" alt="林茨河岸">
+            <div class="edit-btn">+</div>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="time-label">11:30</div>
+          <div class="poi-title">圣玛丽大教堂</div>
+          <div class="item-desc">哥特式建筑细节震撼，内部彩窗在阴天也透出神秘光晕。免费开放，建议捐赠。</div>
+          <div class="photo-grid">
+            <img src="https://img1.baidu.com/it/u=41760383,2107500715&fm=253&app=138&f=JPEG?w=1199&h=800" alt="圣玛丽教堂">
+            <div class="edit-btn">+</div>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="time-label">14:12</div>
+          <div class="poi-title">圣沃尔夫冈小镇</div>
+          <div class="item-desc">萨尔茨卡默古特湖区明珠，湖面如镜。可乘船游湖或登顶沙夫山（Schafbergbahn 小火车冬季可能停运）。</div>
+          <div class="photo-grid">
+            <img src="https://img2.baidu.com/it/u=2862622836,1107065998&fm=253&app=138&f=JPEG?w=800&h=1200" alt="圣沃尔夫冈">
+            <div class="edit-btn">+</div>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="time-label">20:00</div>
+          <div class="poi-title">哈尔斯塔特夜景</div>
+          <div class="item-desc">世界遗产小镇，夜晚灯光点亮湖岸，宛如童话。住宿紧张，建议提前预订；也可当日往返。</div>
+          <div class="photo-grid">
+            <img src="https://img1.baidu.com/it/u=1247804454,253503138&fm=253&app=138&f=JPEG?w=1199&h=800" alt="哈尔斯塔特夜景">
+            <div class="edit-btn">+</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="city-block">
+    <h2 class="city-title">🇭🇺 匈牙利 → 🇦🇹 奥地利 · 温泉与剧院</h2>
+    
+    <div class="day-block">
+      <div class="day-header">Day 3 · 2025-12-15（步数：32,368）</div>
+      <div class="timeline-content">
+        <div class="timeline-item">
+          <div class="time-label">07:52</div>
+          <div class="poi-title">黑维兹温泉湖</div>
+          <div class="item-desc">世界最大天然温泉湖，冬季水温约33°C。阴天0~4°C，但泡汤超舒服！记得带泳衣和拖鞋。</div>
+          <div class="photo-grid">
+            <img src="https://img1.baidu.com/it/u=655841868,1061346746&fm=253&app=138&f=JPEG?w=1067&h=800" alt="黑维兹温泉">
+            <div class="edit-btn">+</div>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="time-label">09:38–10:30</div>
+          <div class="poi-title">巴拉顿湖小镇</div>
+          <div class="item-desc">“匈牙利海”冬日静谧，湖边咖啡馆可小憩。紫外线弱，但风大，需戴围巾防风。</div>
+          <div class="photo-grid">
+            <img src="https://gips0.baidu.com/it/u=1397349768,1065867809&fm=3074&app=3074&f=JPEG" alt="巴拉顿湖">
+            <img src="https://gips3.baidu.com/it/u=220983153,2361111712&fm=3074&app=3074&f=JPEG" alt="巴拉顿公园">
+            <div class="edit-btn">+</div>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="time-label">13:12</div>
+          <div class="poi-title">蒂豪尼修道院</div>
+          <div class="item-desc">位于巴拉顿湖北岸半岛，巴洛克风格修道院视野绝佳。步行上山约15分钟，台阶较多。</div>
+          <div class="photo-grid">
+            <img src="https://gips1.baidu.com/it/u=3673957783,2838332118&fm=3074&app=3074&f=JPEG" alt="蒂豪尼">
+            <div class="edit-btn">+</div>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="time-label">20:07</div>
+          <div class="poi-title">维也纳城堡剧院</div>
+          <div class="item-desc">晴，4~6°C，体感舒适。世界顶级剧院之一，即使不看剧也值得外观打卡。附近有传统咖啡馆可体验维也纳咖啡文化。</div>
+          <div class="photo-grid">
+            <img src="https://img2.baidu.com/it/u=3648034682,1714405036&fm=253&fmt=auto&app=138&f=JPEG?w=750&h=500" alt="城堡剧院">
+            <div class="edit-btn">+</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 美食合集 -->
+  <section class="food-section">
+    <h2 class="section-title">🍽️ 美食推荐</h2>
+    <div class="card">
+      <p>• <strong>布拉格</strong>：避开老城广场高价餐厅，推荐巷子里的 Lokál 啤酒吧，猪肘配黑啤地道实惠。</p>
+      <p>• <strong>卡罗维发利</strong>：必尝温泉蛋（煮7分钟）和 Becherovka 草本利口酒。</p>
+      <p>• <strong>哈尔斯塔特</strong>：Gasthof Simony 餐厅的鳟鱼配土豆饼，湖景位需预约。</p>
+      <p>• <strong>维也纳</strong>：中央咖啡馆（Café Central）的苹果卷+Sacher蛋糕，体验百年咖啡文化。</p>
+    </div>
+  </section>
+
+  <!-- 高光时刻 -->
+  <section class="highlight-section">
+    <h2 class="section-title">✨ 高光时刻</h2>
+    <div class="card">
+      <p>最难忘的是在哈尔斯塔特湖边等待夜幕降临——当万家灯火倒映在漆黑湖面，仿佛置身《冰雪奇缘》的魔法世界。尽管寒风刺骨，但那一刻的宁静与美，让所有奔波都值得。</p>
+      <p>另一惊喜是黑维兹温泉湖：在0°C的冬日清晨跳入33°C的天然温泉，雾气缭绕中看天鹅游过，堪称治愈系巅峰体验。</p>
+    </div>
+  </section>
+
+  <script>
+    // 冬季雪花动画
+    function createSnowflakes() {
+      const container = document.getElementById('snow-container');
+      const snowflakes = '❄❅❆';
+      for (let i = 0; i < 30; i++) {
+        const snow = document.createElement('div');
+        snow.className = 'snowflake';
+        snow.innerHTML = snowflakes.charAt(Math.floor(Math.random() * snowflakes.length));
+        snow.style.left = Math.random() * 100 + 'vw';
+        snow.style.opacity = Math.random() * 0.7 + 0.3;
+        snow.style.fontSize = (Math.random() * 10 + 10) + 'px';
+        snow.style.animationDuration = (Math.random() * 5 + 5) + 's';
+        container.appendChild(snow);
+        // 动画结束后移除
+        setTimeout(() => snow.remove(), 10000);
+      }
+    }
+    setInterval(createSnowflakes, 800);
+    createSnowflakes();
+
+    // 折叠功能（本例未折叠，默认展开）
+    document.querySelectorAll('.day-header').forEach(header => {
+      header.addEventListener('click', () => {
+        const content = header.nextElementSibling;
+        content.style.display = content.style.display === 'none' ? 'block' : 'block';
+      });
+    });
+
+    // 编辑按钮提示
+    document.querySelectorAll('.edit-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        alert('此功能用于增删图片（演示版）');
+      });
+    });
+  </script>
+</body>
+</html>
